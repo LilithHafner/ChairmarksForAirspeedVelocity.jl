@@ -12,8 +12,7 @@ Lossily convert a `Chairmarks.Benchmark` to a `BenchmarkTools.Trial`.
 
 Information stored by `Chairmarks.Benchmark` that is not stored by `BenchmarkTools.Trial` is
 discarded. Information stored by `BenchmarkTools.Trial` that is not stored by
-`Chairmarks.Benchmark` is populated with null values (`NaN` for float, `false` for boolean)
-or with BenchmarkTools' defaults.
+`Chairmarks.Benchmark` is populated with zero or with BenchmarkTools' default.
 """
 function make_trial(b::Chairmarks.Benchmark)
     s = b.samples
@@ -25,7 +24,7 @@ function make_trial(b::Chairmarks.Benchmark)
     s1 = first(s)
     BenchmarkTools.Trial(
         BenchmarkTools.Parameters(
-            seconds=NaN,
+            seconds=0,
             samples=length(s),
             evals=s1.evals,
             overhead=0,
