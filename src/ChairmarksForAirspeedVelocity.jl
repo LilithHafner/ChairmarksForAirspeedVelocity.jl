@@ -6,29 +6,16 @@ using BenchmarkTools: BenchmarkTools, BenchmarkGroup
 export Chairmarks, @benchmarkable, BenchmarkGroup
 
 """
-    Parameters(samples, evals)
+    make_trial(::Chairmarks.Benchmark) -> BenchmarkTools.Trial
 
-A counterfeit `BenchmarkTools.Parameters` (missing some fields).
+Lossily convert a `Chairmarks.Benchmark` to a `BenchmarkTools.Trial`.
+
+Information stored by `Chairmarks.Benchmark` that is not stored by `BenchmarkTools.Trial` is
+discarded. Information stored by `BenchmarkTools.Trial` that is not stored by
+`Chairmarks.Benchmark` is populated with null values (`NaN` for float, `false` for boolean)
+or with BenchmarkTools' defaults.
 """
-struct Parameters
-    samples::Int
-    evals::Int
-end
-
-"""
-    Trial(::Chairmarks.Benchmark)
-
-A counterfeit `BenchmarkTools.Trial`.
-"""
-struct Trial
-    params::Parameters
-    times::Vector{Float64}
-    gctimes::Vector{Float64}
-    memory::Int
-    allocs::Int
-end
-
-function Trial(b::Chairmarks.Benchmark)
+function make_trial(b::Chairmarks.Benchmark)
     s = b.samples
     isempty(s) && throw(ArgumentError("Benchmark has no samples"))
     allequal(s.evals for s in s) || throw(ArgumentError("Not all samples have the same number of evaluations"))
@@ -36,16 +23,18 @@ function Trial(b::Chairmarks.Benchmark)
     allequal(s.bytes for s in s) || throw(ArgumentError("Not all samples have the same memory usage"))
     times = getproperty.(s, :time) .* 1e9
     s1 = first(s)
-    Trial(Parameters(length(s), s1.evals), times, getproperty.(s, :gc_fraction) .* times, s1.bytes, s1.allocs)
-end
-function Base.show(io::IO, t::Trial)
-    if get(io, :typeinfo, nothing) != Trial
-        print(io, Trial, '(')
-    end
-    Chairmarks.print_time(io, minimum(t.times)/1e9)
-    if get(io, :typeinfo, nothing) != Trial
-        print(io, ')')
-    end
+    BenchmarkTools.Trial(
+        BenchmarkTools.Parameters(
+            seconds=NaN,
+            samples=length(s),
+            evals=s1.evals,
+            overhead=0,
+            gctrial=false,
+            gcsample=false),
+        times,
+        getproperty.(s, :gc_fraction) .* times,
+        s1.bytes,
+        s1.allocs)
 end
 
 """
@@ -72,7 +61,7 @@ Like `()->@be args...`, but compatible with tools built to support BenchmarkTool
 
 """
 macro benchmarkable(args...)
-    :(Runnable(()->Trial(@be $(args...))))
+    :(Runnable(()->make_trial(@be $(args...))))
 end
 
 

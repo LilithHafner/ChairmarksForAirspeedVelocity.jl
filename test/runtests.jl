@@ -22,6 +22,7 @@ using Aqua
         @test maximum(result.gctimes) < 100_000_000 # measured in nanoseconds (could be zero)
         @test result.memory isa Int
         @test result.allocs isa Int
+        @test result isa ChairmarksForAirspeedVelocity.BenchmarkTools.Trial
     end
 
     @testset "BenchmarkGroup" begin
