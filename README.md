@@ -28,7 +28,7 @@ SUITE["main"]["random_sleep"] = @benchmarkable rand sleep evals = 1 samples = 2
 
 Install `AirspeedVelocity.jl` with `Pkg.add("AirspeedVelocity"); Pkg.build("AirspeedVelocity")`
 
-Run `~/julia/bin/benchpkg` (or add `~/julia/bin` to your `PATH` and run `benchpkg`)
+Run `~/julia/bin/benchpkg --add https://github.com/LilithHafner/ChairmarksForAirspeedVelocity.jl --rev dirty,main` (or add `~/julia/bin` to your `PATH` and run `benchpkg`)
 
 `@benchmarkable ...` behaves like `() -> @be ...`. See the
 [Chairmarks.jl documentation](https://chairmarks.lilithhafner.com/stable/)
