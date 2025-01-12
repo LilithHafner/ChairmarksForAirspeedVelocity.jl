@@ -58,11 +58,9 @@ BenchmarkTools.tune!(::Runnable; kwargs...) = nothing
     @benchmarkable args...
 
 Like `()->@be args...`, but compatible with tools built to support BenchmarkTools.jl.
-
 """
 macro benchmarkable(args...)
     :(Runnable(()->make_trial(@be $(args...))))
 end
-
 
 end
