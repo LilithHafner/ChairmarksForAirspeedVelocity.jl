@@ -1,7 +1,7 @@
 name = "ChairmarksForAirspeedVelocity"
 uuid = "03f6ca6c-aa78-4850-b881-17e0d6a7eae9"
 authors = ["Lilith Orion Hafner <lilithhafner@gmail.com> and contributors"]
-version = "0.0.0"
+version = "1.0.0"
 
 [deps]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
