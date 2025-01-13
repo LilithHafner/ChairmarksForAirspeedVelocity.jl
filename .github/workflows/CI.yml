@@ -7,7 +7,7 @@ on:
   pull_request:
 jobs:
   quick-test:
-    name: Julia 1 - ubuntu-latest - x64 - ${{ github.event_name }}
+    name: Julia 1 - ubuntu-latest - x64
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +19,7 @@ jobs:
       # Skip coverage on the quick test to save serial time.
       # If something is only covered here and nowhere else, it's not adequately covered.
   test:
-    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }} - ${{ matrix.julia-arch }} - ${{ github.event_name }}
+    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }} - ${{ matrix.julia-arch }}
     needs: quick-test
     runs-on: ${{ matrix.os }}
     strategy:
