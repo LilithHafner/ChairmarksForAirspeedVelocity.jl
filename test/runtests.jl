@@ -52,7 +52,7 @@ using Aqua
         # Check in benchmarks TODO: it would be nice if AirspeedVelocity did not depend on Git.
         run(`git -C $dir init -b main`)
         run(`git -C $dir add .`)
-        run(`git -C $dir commit -m "Initial commit" --author "CI <CI@example.com>"`)
+        run(`git -C $dir commit -m "Initial commit" --author="CI <CI@example.com>"`)
 
         # Install AirspeedVelocity
         exe = joinpath(Base.DEPOT_PATH[1], "bin", "benchpkg")
