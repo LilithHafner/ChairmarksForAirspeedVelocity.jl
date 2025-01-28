@@ -18,8 +18,6 @@ function make_trial(b::Chairmarks.Benchmark)
     s = b.samples
     isempty(s) && throw(ArgumentError("Benchmark has no samples"))
     allequal(s.evals for s in s) || throw(ArgumentError("Not all samples have the same number of evaluations"))
-    allequal(s.allocs for s in s) || throw(ArgumentError("Not all samples have the same number of allocations"))
-    allequal(s.bytes for s in s) || throw(ArgumentError("Not all samples have the same memory usage"))
     times = getproperty.(s, :time) .* 1e9
     s1 = first(s)
     BenchmarkTools.Trial(
@@ -32,8 +30,8 @@ function make_trial(b::Chairmarks.Benchmark)
             gcsample=false),
         times,
         getproperty.(s, :gc_fraction) .* times,
-        s1.bytes,
-        s1.allocs)
+        round(Int, BenchmarkTools.mean(getproperty.(s, :bytes))),
+        round(Int, BenchmarkTools.mean(getproperty.(s, :allocs))))
 end
 
 """
