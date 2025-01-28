@@ -11,7 +11,8 @@ using Aqua
     end
 
     @testset "@benchmarkable" begin
-        benchmark = @benchmarkable 100 rand evals=7 samples=1729
+        n = 100
+        benchmark = @benchmarkable n rand evals=7 samples=1729
         @test ChairmarksForAirspeedVelocity.BenchmarkTools.tune!(benchmark) === nothing
         result = run(benchmark)
         @test result.params.evals == 7
