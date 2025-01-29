@@ -14,9 +14,11 @@ AirspeedVelocity expects benchmarks defined by
 You might want to use this package to gain the performance of `Chairmarks.jl` while still
 using the features of `AirspeedVelocity.jl`.
 
-## Usage
+## Quick start tutorial
 
-Put this code in `benchmark/benchmarks.jl` and commit it to your default branch
+<!-- \/ Ensure that updates here are reflected in the "End to end tests" testset in runtests.jl \/ -->
+
+Put this code in `benchmark/benchmarks.jl` and commit it to your `main` branch
 
 ```julia
 using ChairmarksForAirspeedVelocity
@@ -26,12 +28,25 @@ const SUITE = BenchmarkGroup()
 SUITE["main"]["random_sleep"] = @benchmarkable rand sleep evals = 1 samples = 2
 ```
 
-Install `AirspeedVelocity.jl` with `Pkg.add("AirspeedVelocity"); Pkg.build("AirspeedVelocity")`
+Install `AirspeedVelocity.jl` with `julia -e 'using Pkg; Pkg.activate(temp=true); Pkg.add("AirspeedVelocity")'`
 
-Run `~/julia/bin/benchpkg --add https://github.com/LilithHafner/ChairmarksForAirspeedVelocity.jl --rev dirty,main` (or add `~/julia/bin` to your `PATH` and run `benchpkg`)
+Navigate to your package directory and run
+`~/julia/bin/benchpkg --add=https://github.com/LilithHafner/ChairmarksForAirspeedVelocity.jl --rev=dirty,main`
 
-`@benchmarkable ...` behaves like `() -> @be ...`. See the
-[Chairmarks.jl documentation](https://chairmarks.lilithhafner.com/stable/)
-for more information on defining benchmarks and the
+<!-- /\ Ensure that updates here are reflected in the "End to end tests" testset in runtests.jl /\ -->
+
+## Explanation
+
+`@benchmarkable ...` returns an object that masquerades as a `BenchmarkTools.Benchmark`. It
+can be `BenchmarkTools.tune!`d (which is a no-op) and `run` (which runs `@be ...` and
+lossily coerces the result into a `BenchmarkTools.Trial`).
+
+A more idiomatic pattern would be `()->@b ...` but that would not support packages that
+expect the BenchmarkTools API.
+
+## Reference
+
+See the [Chairmarks.jl documentation](https://chairmarks.lilithhafner.com/stable/)
+for more information on `@be` and defining benchmarks and the
 [AirspeedVelocity documentation](https://astroautomata.com/AirspeedVelocity.jl/stable/)
 for more information on using `AirspeedVelocity.jl` to analyze benchmarks.
