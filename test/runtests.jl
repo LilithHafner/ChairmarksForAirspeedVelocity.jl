@@ -29,4 +29,53 @@ using Aqua
     @testset "BenchmarkGroup" begin
         BenchmarkGroup()
     end
+
+    @testset "End to end tests" begin
+        # \/ Ensure that updates here are reflected in the Quick start tutorial in the README.md \/
+
+        # Create a package
+        import Pkg
+        dir = joinpath(tempname(), "Example")
+        Pkg.generate(dir; io=devnull)
+
+        # Define benchmarks
+        mkdir(joinpath(dir, "benchmark"))
+        open(joinpath(dir, "benchmark", "benchmarks.jl"), "w") do io
+            println(io, """
+            using ChairmarksForAirspeedVelocity
+
+            const SUITE = BenchmarkGroup()
+
+            SUITE["main"]["random_sleep"] = @benchmarkable rand()*.1 sleep evals = 1 samples = 2
+            """)
+        end
+
+        # Check in benchmarks TODO: it would be nice if AirspeedVelocity did not depend on Git.
+        run(`git -C $dir init -b main`)
+        run(`git -C $dir add .`)
+        run(`git -C $dir -c user.name="CI" -c user.email="CI@email.org" commit -m "Initial commit"`)
+
+        # Install AirspeedVelocity
+        exe = joinpath(Base.DEPOT_PATH[1], "bin", "benchpkg")
+        isfile(exe) || run(`julia -e 'using Pkg; Pkg.activate(temp=true); Pkg.add("AirspeedVelocity")'`)
+        @test isfile(exe)
+
+        # Run benchmarks
+        res = cd(dir) do
+            read(`$exe -add=https://github.com/LilithHafner/ChairmarksForAirspeedVelocity.jl -rev=dirty,main`, String)
+        end
+
+        table = res[only(eachmatch(r"\n\|   +\|", res)).offset:end]
+
+        import Markdown
+        @test only(Markdown.parse(table).content) isa Markdown.Table
+        @test contains(table, "main")
+        @test contains(table, "dirty")
+        @test contains(table, "random_sleep")
+        @test contains(table, "time_to_load")
+        @test contains(table, "±")
+        @test endswith(table, r"\d +\|\n+")
+
+        # /\ Ensure that updates here are reflected in the Quick start tutorial in the README.md /\
+    end
 end
